@@ -1,6 +1,7 @@
 package ru.javawebinar.topjava.model;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class UserMeal {
     private final LocalDateTime dateTime;
@@ -10,6 +11,7 @@ public class UserMeal {
     private final int calories;
 
     public UserMeal(LocalDateTime dateTime, String description, int calories) {
+        Objects.requireNonNull(dateTime, "DateTime cannot be null");
         this.dateTime = dateTime;
         this.description = description;
         this.calories = calories;
