@@ -1,0 +1,17 @@
+table.meals {
+    border: 1px silver solid;
+    border-collapse: collapse;
+}
+table.meals tr td, table.meals tr th {
+    border: 1px silver solid;
+    padding: 5px;
+
+}
+
+tr.exceed {
+    color: red;
+}
+
+tr.nonExceed {
+    color: green;
+}
