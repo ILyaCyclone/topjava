@@ -7,6 +7,6 @@ public class RepositoryFactory {
     private RepositoryFactory(){}
 
     public static MealRepository createMealRepository() {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return new InMemoryMealsRepository();
     }
 }
