@@ -7,6 +7,6 @@ public class RepositoryFactory {
     private RepositoryFactory(){}
 
     public static MealRepository createMealRepository() {
-        return new InMemoryMealsRepository();
+        return new InMemoryMealRepository();
     }
 }

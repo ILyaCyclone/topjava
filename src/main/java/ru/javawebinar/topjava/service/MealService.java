@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * methods signature from Spring Data CrudRepository
+ * CRUD methods signature from Spring Data CrudRepository
  */
-public interface MealsService {
+public interface MealService {
 
     List<MealWithExceed> getWithExceed(int caloriesPerDay);
 

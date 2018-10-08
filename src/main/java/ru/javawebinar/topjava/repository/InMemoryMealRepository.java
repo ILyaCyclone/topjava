@@ -1,8 +1,6 @@
 package ru.javawebinar.topjava.repository;
 
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.model.MealWithExceed;
-import ru.javawebinar.topjava.util.MealsUtil;
 
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -12,7 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-public class InMemoryMealsRepository implements MealRepository {
+public class InMemoryMealRepository implements MealRepository {
 
     // map key and Meal::getId must be equals
     private static final Map<Integer, Meal> map;
@@ -35,11 +33,6 @@ public class InMemoryMealsRepository implements MealRepository {
             meal.setId(idCounter.getAndIncrement());
             map.put(meal.getId(), meal);
         });
-    }
-
-    @Override
-    public List<MealWithExceed> getWithExceed(int caloriesPerDay) {
-        return MealsUtil.getWithExceeded(findAll(), caloriesPerDay);
     }
 
     @Override

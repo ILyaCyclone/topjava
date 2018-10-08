@@ -6,7 +6,7 @@ package ru.javawebinar.topjava.service;
 public class ServiceFactory {
     private ServiceFactory() {}
 
-    public static MealsService createMealsService() {
-        return new DefaultMealsService();
+    public static MealService createMealsService() {
+        return new DefaultMealService();
     }
 }

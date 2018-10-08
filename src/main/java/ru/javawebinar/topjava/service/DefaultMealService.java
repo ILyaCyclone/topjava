@@ -4,78 +4,79 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.MealWithExceed;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.repository.RepositoryFactory;
+import ru.javawebinar.topjava.util.MealsUtil;
 
 import java.util.List;
 import java.util.Optional;
 
 /**
- * delegates all standard CRUD methods to MealRepository
+ * delegates standard CRUD methods to MealRepository
  */
-class DefaultMealsService implements MealsService {
+class DefaultMealService implements MealService {
 
-    private final MealRepository mealsRepository;
+    private final MealRepository mealRepository;
 
-    public DefaultMealsService() {
-        mealsRepository = RepositoryFactory.createMealRepository();
+    public DefaultMealService() {
+        mealRepository = RepositoryFactory.createMealRepository();
     }
 
     @Override
     public List<MealWithExceed> getWithExceed(int caloriesPerDay) {
-        return mealsRepository.getWithExceed(caloriesPerDay);
+        return MealsUtil.getWithExceeded(findAll(), caloriesPerDay);
     }
 
     @Override
     public <S extends Meal> S save(S meal) {
-        return mealsRepository.save(meal);
+        return mealRepository.save(meal);
     }
 
     @Override
     public <S extends Meal> Iterable<S> saveAll(Iterable<S> meals) {
-        return mealsRepository.saveAll(meals);
+        return mealRepository.saveAll(meals);
     }
 
     @Override
     public Optional<Meal> findById(Integer id) {
-        return mealsRepository.findById(id);
+        return mealRepository.findById(id);
     }
 
     @Override
     public boolean existsById(Integer id) {
-        return mealsRepository.existsById(id);
+        return mealRepository.existsById(id);
     }
 
     @Override
     public Iterable<Meal> findAll() {
-        return mealsRepository.findAll();
+        return mealRepository.findAll();
     }
 
     @Override
     public Iterable<Meal> findAllById(Iterable<Integer> ids) {
-        return mealsRepository.findAllById(ids);
+        return mealRepository.findAllById(ids);
     }
 
     @Override
     public long count() {
-        return mealsRepository.count();
+        return mealRepository.count();
     }
 
     @Override
     public void deleteById(Integer id) {
-        mealsRepository.deleteById(id);
+        mealRepository.deleteById(id);
     }
 
     @Override
     public void delete(Meal meal) {
-        mealsRepository.delete(meal);
+        mealRepository.delete(meal);
     }
 
     @Override
     public void deleteAll(Iterable<? extends Meal> meals) {
-        mealsRepository.deleteAll(meals);
+        mealRepository.deleteAll(meals);
     }
 
     @Override
     public void deleteAll() {
-        mealsRepository.deleteAll();
+        mealRepository.deleteAll();
     }
 }
