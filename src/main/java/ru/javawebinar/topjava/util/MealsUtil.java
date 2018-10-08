@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 
@@ -34,11 +35,11 @@ public class MealsUtil {
 //        System.out.println(getFilteredWithExceededInOnePass2(meals, LocalTime.of(7, 0), LocalTime.of(12, 0), 2000));
     }
 
-    public static List<MealWithExceed> getWithExceeded(List<Meal> meals, int caloriesPerDay) {
+    public static List<MealWithExceed> getWithExceeded(Iterable<Meal> meals, int caloriesPerDay) {
         // or use filter with LocalTime.MIN & LocalTime.MAX
         return getFilteredWithExceeded(meals, null, null, caloriesPerDay);
     }
-    public static List<MealWithExceed> getFilteredWithExceeded(List<Meal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
+    public static List<MealWithExceed> getFilteredWithExceeded(Iterable<Meal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
         return getFilteredWithExceededInOnePass(meals, startTime, endTime, caloriesPerDay);
     }
 
@@ -69,8 +70,8 @@ public class MealsUtil {
 //        return mealsWithExceeded;
 //    }
 
-    private static List<MealWithExceed> getFilteredWithExceededInOnePass(List<Meal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
-        Collection<List<Meal>> list = meals.stream()
+    private static List<MealWithExceed> getFilteredWithExceededInOnePass(Iterable<Meal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
+        Collection<List<Meal>> list = StreamSupport.stream(meals.spliterator(), false)
                 .collect(Collectors.groupingBy(Meal::getDate)).values();
 
         return list.stream().flatMap(dayMeals -> {

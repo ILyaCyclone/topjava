@@ -18,7 +18,7 @@ public class MealServlet extends HttpServlet {
     private static final Logger log = getLogger(MealServlet.class);
     private static final int CALORIES_PER_DAY = 2000;
 
-    private MealsService mealsService;
+    private final MealsService mealsService;
 
     public MealServlet() {
         mealsService = ServiceFactory.createMealsService();
