@@ -18,6 +18,8 @@ public class MealServlet extends HttpServlet {
     private static final Logger log = getLogger(MealServlet.class);
     private static final int CALORIES_PER_DAY = 2000;
 
+    private static final String ACTION_DELETE = "delete";
+
     private final MealService mealService;
 
     public MealServlet() {
@@ -32,5 +34,19 @@ public class MealServlet extends HttpServlet {
 
         log.debug("forward to meals");
         request.getRequestDispatcher("/meals.jsp").forward(request, response);
+    }
+
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String action = request.getParameter("action");
+        switch (action) {
+            case ACTION_DELETE:
+                Integer id = Integer.valueOf(request.getParameter("id"));
+                mealService.deleteById(id);
+                break;
+        }
+
+        response.sendRedirect("meals");
     }
 }
