@@ -1,17 +1,50 @@
-table.meals {
-    border: 1px silver solid;
+:root {
+    --border-standard: 1px silver solid;
+}
+
+.meals__table {
+    border: var(--border-standard);
     border-collapse: collapse;
 }
-table.meals tr td, table.meals tr th {
-    border: 1px silver solid;
+.meals__table tr td, .meals__table tr th {
     padding: 5px;
-
+    border: var(--border-standard);
 }
 
-tr.exceed {
+.meals__table tr.exceed {
     color: red;
 }
 
-tr.nonExceed {
+.meals__table tr.nonExceed {
     color: green;
+}
+
+.meals__table + * {
+    margin-top: 20px;
+}
+
+
+
+
+
+
+/*
+edit form is initially not displayed
+ */
+.meals__form {
+    display: none;
+
+    padding: 5px;
+    border: var(--border-standard);
+}
+
+.meals__form-actions {
+    padding-top: 10px;
+}
+.meals__form-actions * + * {
+    margin-left: 20px;
+}
+
+.meals__form-label {
+    display: none;
 }
