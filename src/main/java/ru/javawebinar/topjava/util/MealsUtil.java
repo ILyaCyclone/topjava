@@ -9,9 +9,8 @@ import java.time.Month;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
@@ -33,27 +32,26 @@ public class MealsUtil {
 
     public static List<MealWithExceed> getWithExceeded(Iterable<Meal> meals, int caloriesPerDay) {
         // or use filter with LocalTime.MIN & LocalTime.MAX
-        return getFilteredWithExceeded(meals, null, null, caloriesPerDay);
+        Predicate<Meal> mealPredicate = (m -> true);
+        return getFilteredWithExceededInOnePass(meals, mealPredicate, caloriesPerDay);
     }
     public static List<MealWithExceed> getFilteredWithExceeded(Iterable<Meal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
-        return getFilteredWithExceededInOnePass(meals, startTime, endTime, caloriesPerDay);
+        Predicate<Meal> mealPredicate = (m -> TimeUtil.isBetween(m.getTime(), startTime, endTime));
+        return getFilteredWithExceededInOnePass(meals, mealPredicate, caloriesPerDay);
     }
 
 
 
 
-    private static List<MealWithExceed> getFilteredWithExceededInOnePass(Iterable<Meal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
+    private static List<MealWithExceed> getFilteredWithExceededInOnePass(Iterable<Meal> meals, Predicate<Meal> mealPredicate, int caloriesPerDay) {
         Collection<List<Meal>> list = StreamSupport.stream(meals.spliterator(), false)
                 .collect(Collectors.groupingBy(Meal::getDate)).values();
 
         return list.stream().flatMap(dayMeals -> {
             boolean exceed = dayMeals.stream().mapToInt(Meal::getCalories).sum() > caloriesPerDay;
-            Stream<Meal> dayMealsStream = dayMeals.stream();
-            // or use filter with LocalTime.MIN & LocalTime.MAX
-            if(Objects.nonNull(startTime) && Objects.nonNull(endTime)) {
-                dayMealsStream = dayMealsStream.filter(meal -> TimeUtil.isBetween(meal.getTime(), startTime, endTime));
-            }
-            return dayMealsStream.map(meal -> createWithExceed(meal, exceed));
+            return dayMeals.stream()
+                    .filter(mealPredicate)
+                    .map(meal -> createWithExceed(meal, exceed));
         }).collect(toList());
     }
 
