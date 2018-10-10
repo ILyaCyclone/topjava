@@ -72,7 +72,7 @@ public class MealServlet extends HttpServlet {
 
     private Meal createMealFromRequest(HttpServletRequest request) {
         String idParam = request.getParameter("id");
-        Integer id = idParam != null && idParam.isEmpty() ? Integer.valueOf(idParam) : null;
+        Integer id = idParam != null && !idParam.isEmpty() ? Integer.valueOf(idParam) : null;
         String datetimeParam = request.getParameter("datetime");
         LocalDateTime dateTime = LocalDateTime.parse(datetimeParam);
         String description = request.getParameter("description");
