@@ -8,7 +8,7 @@ public class CharacterEncodingFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        encoding = filterConfig.getInitParameter("requestEncoding");
+        encoding = filterConfig.getInitParameter("encoding");
         if (encoding == null) encoding = "UTF-8";
     }
 
