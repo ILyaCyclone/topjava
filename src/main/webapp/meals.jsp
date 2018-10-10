@@ -14,7 +14,7 @@
 
 <h3>Normal calories per day: ${caloriesPerDay}</h3>
 
-<section classs="meals">
+<section class="meals">
     <table class="meals__table">
         <thead>
         <tr>
