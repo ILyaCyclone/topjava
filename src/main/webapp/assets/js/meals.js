@@ -1,8 +1,9 @@
 var _saveForm = document.forms.save;
-var _creatButton = document.querySelector(".meals__create");
+var _deleteForm = document.forms.delete;
+var _createButton = document.querySelector(".meals__create");
 
 // ==================== create action ====================
-_creatButton.addEventListener("click", function() {
+_createButton.addEventListener("click", function() {
     onCreate();
 });
 
@@ -11,7 +12,7 @@ function onCreate() {
     console.log("onCreate");
 
     clearSaveForm();
-    _creatButton.style.display = 'none';
+    _createButton.style.display = 'none';
     document.querySelector('.meals__form-label.meals__form-label_create').style.display = 'block';
     document.querySelector('.meals__form').style.display = 'inline-block';
 }
@@ -36,7 +37,7 @@ function onEdit(mealId) {
     _saveForm.description.value = row.querySelector(".meals__table-description").innerText;
     _saveForm.calories.value = row.querySelector(".meals__table-calories").innerText;
 
-    _creatButton.style.display = 'none';
+    _createButton.style.display = 'none';
     document.querySelectorAll('.meals__form-label').forEach(function(el) {el.style.display = 'none';});
     document.querySelector('.meals__form-label.meals__form-label_edit').style.display = 'block';
     document.querySelector('.meals__form').style.display = 'inline-block';
@@ -61,8 +62,8 @@ document.querySelectorAll(".meals__table-delete").forEach(function(button) {
 function onDelete(mealId) {
     console.log("onDelete id = "+mealId);
     if(confirm("Delete record?")) {
-        document.forms.delete.id.value = mealId;
-        document.forms.delete.submit();
+        _deleteForm.id.value = mealId;
+        _deleteForm.submit();
     }
 }
 // ==================== end of delete action ====================
@@ -72,7 +73,7 @@ function onDelete(mealId) {
 // ==================== cancel form ====================
 
 document.querySelector(".meals__form-cancel").addEventListener("click", function() {
-    _creatButton.style.display = 'block';
+    _createButton.style.display = 'block';
     hideSaveForm();
     clearSaveForm();
 });
