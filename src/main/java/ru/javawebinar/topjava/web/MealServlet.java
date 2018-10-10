@@ -23,17 +23,14 @@ public class MealServlet extends HttpServlet {
     private static final String ACTION_SAVE = "save"
             , ACTION_DELETE = "delete";
 
-    private final MealService mealService;
+    private MealService mealService;
 
-    public MealServlet() {
-        mealService = ServiceFactory.createMealsService();
+    @Override
+    public void init() throws ServletException {
+        super.init();
+
+        mealService = ServiceFactory.createMealService();
     }
-
-//    @Override
-//    public void init() throws ServletException {
-    // can't assign final in init()
-//        mealService = ServiceFactory.createMealsService();
-//    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -75,7 +72,7 @@ public class MealServlet extends HttpServlet {
 
     private Meal createMealFromRequest(HttpServletRequest request) {
         String idParam = request.getParameter("id");
-        Integer id = idParam != null && idParam.trim().length() > 0 ? Integer.valueOf(idParam) : null;
+        Integer id = idParam != null && idParam.isEmpty() ? Integer.valueOf(idParam) : null;
         String datetimeParam = request.getParameter("datetime");
         LocalDateTime dateTime = LocalDateTime.parse(datetimeParam);
         String description = request.getParameter("description");

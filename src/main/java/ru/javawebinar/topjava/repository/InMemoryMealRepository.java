@@ -13,31 +13,24 @@ import java.util.stream.StreamSupport;
 public class InMemoryMealRepository implements MealRepository {
 
     // map key and Meal::getId must be equals
-    private static final Map<Integer, Meal> map;
-    private static final AtomicInteger idCounter;
+    private final Map<Integer, Meal> map;
+    private final AtomicInteger idCounter;
 
-    static {
+    {
         map = new ConcurrentHashMap<>();
         idCounter = new AtomicInteger(0);
 
-        List<Meal> meals = Arrays.asList(
-                new Meal(LocalDateTime.of(2015, Month.MAY, 30, 10, 0), "Завтрак", 500),
-                new Meal(LocalDateTime.of(2015, Month.MAY, 30, 13, 0), "Обед", 1000),
-                new Meal(LocalDateTime.of(2015, Month.MAY, 30, 20, 0), "Ужин", 500),
-                new Meal(LocalDateTime.of(2015, Month.MAY, 31, 10, 0), "Завтрак", 1000),
-                new Meal(LocalDateTime.of(2015, Month.MAY, 31, 13, 0), "Обед", 500),
-                new Meal(LocalDateTime.of(2015, Month.MAY, 31, 20, 0), "Ужин", 510)
-        );
-
-        meals.forEach(meal -> {
-            meal.setId(idCounter.getAndIncrement());
-            map.put(meal.getId(), meal);
-        });
+        save(new Meal(LocalDateTime.of(2015, Month.MAY, 30, 10, 0), "Завтрак", 500));
+        save(new Meal(LocalDateTime.of(2015, Month.MAY, 30, 13, 0), "Обед", 1000));
+        save(new Meal(LocalDateTime.of(2015, Month.MAY, 30, 20, 0), "Ужин", 500));
+        save(new Meal(LocalDateTime.of(2015, Month.MAY, 31, 10, 0), "Завтрак", 1000));
+        save(new Meal(LocalDateTime.of(2015, Month.MAY, 31, 13, 0), "Обед", 500));
+        save(new Meal(LocalDateTime.of(2015, Month.MAY, 31, 20, 0), "Ужин", 510));
     }
 
     @Override
     public <S extends Meal> S save(S meal) {
-        if(Objects.isNull(meal.getId())) {
+        if(meal.isNew()) {
             meal.setId(idCounter.getAndIncrement());
         }
 
@@ -48,7 +41,7 @@ public class InMemoryMealRepository implements MealRepository {
     @Override
     public <S extends Meal> Iterable<S> saveAll(Iterable<S> meals) {
         return StreamSupport.stream(meals.spliterator(), false)
-                .map(meal -> save(meal))
+                .map(this::save)
                 .collect(Collectors.toList());
     }
 
@@ -70,7 +63,7 @@ public class InMemoryMealRepository implements MealRepository {
     @Override
     public Iterable<Meal> findAllById(Iterable<Integer> ids) {
         return StreamSupport.stream(ids.spliterator(), false)
-                .map(id -> findById(id))
+                .map(this::findById)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
@@ -88,14 +81,12 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public void delete(Meal meal) {
-        if(map.containsKey(meal.getId())) {
-            map.remove(meal.getId());
-        }
+        map.remove(meal.getId());
     }
 
     @Override
     public void deleteAll(Iterable<? extends Meal> meals) {
-        meals.forEach(meal -> delete(meal));
+        meals.forEach(this::delete);
     }
 
     @Override
