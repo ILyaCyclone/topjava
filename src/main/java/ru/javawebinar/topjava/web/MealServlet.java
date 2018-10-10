@@ -26,7 +26,12 @@ public class MealServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        log.debug("serving meals");
+
         List<MealWithExceed> mealsWithExceed = mealsService.getWithExceed(CALORIES_PER_DAY);
+        log.trace("caloriesPerDay = "+CALORIES_PER_DAY);
+        log.trace("mealsWithExceed = "+mealsWithExceed);
+
         request.setAttribute("mealsWithExceed", mealsWithExceed);
         request.setAttribute("caloriesPerDay", CALORIES_PER_DAY);
 
