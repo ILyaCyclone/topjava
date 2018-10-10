@@ -28,7 +28,7 @@
         <tbody>
         <c:forEach items="${mealsWithExceed}" var="mealWithExceed">
             <tr class="${mealWithExceed.exceed ? "exceed" : "nonExceed"}" data-id="${mealWithExceed.id}" >
-                <td class="meals__table-datetime" datetime="${mealWithExceed.dateTime}"><javatime:format value="${mealWithExceed.dateTime}" style="MS" /></td>
+                <td class="meals__table-datetime" data-datetime="${mealWithExceed.dateTime}"><javatime:format value="${mealWithExceed.dateTime}" style="MS" /></td>
                 <td class="meals__table-description">${mealWithExceed.description}</td>
                 <td class="meals__table-calories">${mealWithExceed.calories}</td>
                 <td>${mealWithExceed.exceed ? "exceeded" : "normal"}</td>

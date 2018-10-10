@@ -33,7 +33,7 @@ function onEdit(mealId) {
     var row = document.querySelector(".meals__table tr[data-id=\""+mealId+"\"]");
 
     _saveForm.id.value = mealId;
-    _saveForm.datetime.value = row.querySelector(".meals__table-datetime").getAttribute("datetime");
+    _saveForm.datetime.value = row.querySelector(".meals__table-datetime").getAttribute("data-datetime");
     _saveForm.description.value = row.querySelector(".meals__table-description").innerText;
     _saveForm.calories.value = row.querySelector(".meals__table-calories").innerText;
 
