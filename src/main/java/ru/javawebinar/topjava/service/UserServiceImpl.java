@@ -33,18 +33,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User get(int id) throws NotFoundException {
-        return checkNotFoundWithId(repository.get(id), id);
+        return checkNotFoundWithId(repository.findOne(id), id);
     }
 
     @Override
     public User getByEmail(String email) throws NotFoundException {
-        return checkNotFound(repository.getByEmail(email), "email=" + email);
+        return checkNotFound(repository.findByEmail(email), "email=" + email);
     }
 
     @Override
-    public List<User> getAll() {
-        return repository.getAll();
-    }
+    public List<User> getAll() { return repository.findAll(); }
 
     @Override
     public void update(User user) {

@@ -1,12 +1,13 @@
 package ru.javawebinar.topjava.model;
 
-import java.util.Date;
-import java.util.EnumSet;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static java.util.Comparator.comparing;
 import static ru.javawebinar.topjava.util.MealsUtil.DEFAULT_CALORIES_PER_DAY;
 
-public class User extends AbstractNamedEntity {
+public class User extends AbstractNamedEntity implements Comparable<User> {
 
     private String email;
 
@@ -20,6 +21,10 @@ public class User extends AbstractNamedEntity {
 
     private int caloriesPerDay = DEFAULT_CALORIES_PER_DAY;
 
+    public User(String name, String email, String password, Role... roles) {
+        //TODO use Guava for roles to set
+        this(null, name, email, password, DEFAULT_CALORIES_PER_DAY, true, Stream.of(roles).collect(Collectors.toSet()));
+    }
     public User(Integer id, String name, String email, String password, Role role, Role... roles) {
         this(id, name, email, password, DEFAULT_CALORIES_PER_DAY, true, EnumSet.of(role, roles));
     }
@@ -87,5 +92,15 @@ public class User extends AbstractNamedEntity {
                 ", roles=" + roles +
                 ", caloriesPerDay=" + caloriesPerDay +
                 ')';
+    }
+
+    /**
+     * compares by name or by email if names are equal
+     * @param other
+     * @return
+     */
+    @Override
+    public int compareTo(User other) {
+        return (!this.name.equals(other.name)) ? this.name.compareTo(other.name) : this.email.compareToIgnoreCase(other.email);
     }
 }

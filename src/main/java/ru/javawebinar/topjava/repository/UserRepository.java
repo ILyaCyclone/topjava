@@ -11,10 +11,10 @@ public interface UserRepository {
     boolean delete(int id);
 
     // null if not found
-    User get(int id);
+    User findOne(int id);
 
     // null if not found
-    User getByEmail(String email);
+    User findByEmail(String email);
 
-    List<User> getAll();
+    List<User> findAll();
 }
