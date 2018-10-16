@@ -26,7 +26,25 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
     private AtomicInteger counter = new AtomicInteger(0);
 
     {
-        MealsUtil.MEALS.forEach(this::save);
+        logger.info("initializing meals");
+        //        MealsUtil.MEALS.forEach(this::save);
+        List<Meal> meals = Arrays.asList(
+                new Meal(0, LocalDateTime.of(2015, Month.MAY, 30, 10, 0), "Завтрак", 500),
+                new Meal(0, LocalDateTime.of(2015, Month.MAY, 30, 13, 0), "Обед", 1000),
+                new Meal(0, LocalDateTime.of(2015, Month.MAY, 30, 20, 0), "Ужин", 500),
+                new Meal(0, LocalDateTime.of(2015, Month.MAY, 31, 10, 0), "Завтрак", 1000),
+                new Meal(0, LocalDateTime.of(2015, Month.MAY, 31, 13, 0), "Обед", 500),
+                new Meal(0, LocalDateTime.of(2015, Month.MAY, 31, 20, 0), "Ужин", 510),
+
+                new Meal(1, LocalDateTime.of(2011, Month.MAY, 30, 10, 0), "Завтрак 1", 500),
+                new Meal(1, LocalDateTime.of(2011, Month.MAY, 30, 13, 0), "Обед 1", 1000),
+                new Meal(1, LocalDateTime.of(2011, Month.MAY, 30, 20, 0), "Ужин 1", 500),
+                new Meal(1, LocalDateTime.of(2011, Month.MAY, 31, 10, 0), "Завтрак 1", 1000),
+                new Meal(1, LocalDateTime.of(2011, Month.MAY, 31, 13, 0), "Обед 1", 500),
+                new Meal(1, LocalDateTime.of(2011, Month.MAY, 31, 20, 0), "Ужин 1", 510)
+        );
+        meals.forEach(this::save);
+        logger.info("repository.size: {}", repository.size());
     }
 
     /**
