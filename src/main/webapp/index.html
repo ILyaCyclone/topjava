@@ -10,5 +10,17 @@
     <li><a href="users">Users</a></li>
     <li><a href="meals">Meals</a></li>
 </ul>
+
+<form method="get" action="meals">
+    <input type="hidden" name="action" value="authorize">
+    <label>Log in as
+        <select name="id">
+            <option value="1">User ID 1</option>
+            <option value="0">User ID 0</option>
+        </select>
+    </label>
+    <button>Submit</button>
+
+</form>
 </body>
 </html>
