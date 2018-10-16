@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.web;
 
+import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -13,7 +14,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
@@ -81,6 +84,22 @@ public class MealServlet extends HttpServlet {
                 SecurityUtil.setAuthUserId(userId);
                 response.sendRedirect("meals");
                 break;
+
+            case "filter":
+                LocalDate startDate = getLocalDate(request, "startDate");
+                LocalDate endDate = getLocalDate(request, "endDate");
+                LocalTime startTime = getLocalTime(request, "startTime");
+                LocalTime endTime = getLocalTime(request, "endTime");
+
+                request.setAttribute("meals", controller.getFilteredWithExceed(startDate, endDate, startTime, endTime));
+                request.setAttribute("currentUserId", SecurityUtil.authUserId());
+
+                request.setAttribute("startDate", startDate);
+                request.setAttribute("endDate", endDate);
+                request.setAttribute("startTime", startTime);
+                request.setAttribute("endTime", endTime);
+
+                request.getRequestDispatcher("/meals.jsp").forward(request, response);
             case "all":
             default:
                 log.info("getAll");
@@ -95,5 +114,12 @@ public class MealServlet extends HttpServlet {
     private int getId(HttpServletRequest request) {
         String paramId = Objects.requireNonNull(request.getParameter("id"));
         return Integer.parseInt(paramId);
+    }
+
+    private LocalDate getLocalDate(HttpServletRequest request, String parameterName) {
+        return Strings.isNullOrEmpty(request.getParameter(parameterName)) ? null : LocalDate.parse(request.getParameter(parameterName));
+    }
+    private LocalTime getLocalTime(HttpServletRequest request, String parameterName) {
+        return Strings.isNullOrEmpty(request.getParameter(parameterName)) ? null : LocalTime.parse(request.getParameter(parameterName));
     }
 }

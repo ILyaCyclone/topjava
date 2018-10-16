@@ -57,14 +57,18 @@ public class MealRestController {
     }
 
     public List<MealWithExceed> getFilteredWithExceed(LocalDate startDate, LocalDate endDate) {
-        return getFilteredWithExceed(startDate, endDate, LocalTime.MIN, LocalTime.MAX);
+        return getFilteredWithExceed(startDate, endDate, null, null);
     }
     public List<MealWithExceed> getFilteredWithExceed(LocalTime startTime, LocalTime endTime) {
-        return getFilteredWithExceed(LocalDate.MIN, LocalDate.MAX, startTime, endTime);
+        return getFilteredWithExceed(null, null, startTime, endTime);
     }
     public List<MealWithExceed> getFilteredWithExceed(LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
         log.info("getFilteredWithExceed ");
-        return service.getFilteredWithExceed(SecurityUtil.authUserId(), SecurityUtil.authUserCaloriesPerDay(), startDate, endDate, startTime, endTime);
+        return service.getFilteredWithExceed(SecurityUtil.authUserId(), SecurityUtil.authUserCaloriesPerDay()
+                , startDate != null ? startDate : LocalDate.MIN
+                , endDate != null ? endDate : LocalDate.MAX
+                , startTime != null ? startTime : LocalTime.MIN
+                , endTime != null ? endTime : LocalTime.MAX);
     }
 
 }
