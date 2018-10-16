@@ -61,17 +61,8 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
             repository.put(meal.getId(), meal);
             return meal;
         } else {
-            // this would work, but wouldn't return null if meal does not belong to user
-//            return repository.computeIfPresent(meal.getId()
-//                    , (id, storedMeal) -> MealsUtil.mealBelongsToUser(storedMeal, meal.getUserId()) ? meal : oldMeal);
-
-            Meal storedMeal = repository.get(meal.getId());
-            if(storedMeal != null && MealsUtil.mealBelongsToUser(storedMeal, meal.getUserId())) {
-                repository.put(meal.getId(), meal);
-                return meal;
-            } else {
-                return null;
-            }
+            return repository.computeIfPresent(meal.getId()
+                    , (id, storedMeal) -> MealsUtil.mealBelongsToUser(storedMeal, meal.getUserId()) ? meal : storedMeal);
         }
     }
 
