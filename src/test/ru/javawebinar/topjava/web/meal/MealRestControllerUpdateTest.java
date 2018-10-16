@@ -13,12 +13,12 @@ import static org.junit.Assert.assertNotNull;
 public class MealRestControllerUpdateTest {
 
     @Rule
-    public MealRestControllerInitializeRule testRule = new MealRestControllerInitializeRule();
+    public MealRestControllerInitializeRule resource = new MealRestControllerInitializeRule();
 
 
     @Test
     public void contextLoads() {
-        assertNotNull(testRule.controller());
+        assertNotNull(resource.controller());
     }
 
     @Test
@@ -29,18 +29,18 @@ public class MealRestControllerUpdateTest {
         Integer updatedCalories = 350;
         LocalDateTime updatedDateTime = LocalDateTime.of(2018, 10, 15, 10, 30);
 
-        assertNotNull("can't get meal ID " + id, testRule.controller().get(id));
+        assertNotNull("can't get meal ID " + id, resource.controller().get(id));
 
-        Meal newMeal = new Meal(id, testRule.authUserId(), updatedDateTime, updatedDescription, updatedCalories);
+        Meal newMeal = new Meal(id, resource.authUserId(), updatedDateTime, updatedDescription, updatedCalories);
 
         // act
-        testRule.controller().update(newMeal);
+        resource.controller().update(newMeal);
 
         // assert
-        Meal updatedMeal = testRule.controller().get(id);
+        Meal updatedMeal = resource.controller().get(id);
 
         assertEquals(id, updatedMeal.getId());
-        assertEquals(testRule.authUserId(), updatedMeal.getUserId());
+        assertEquals(resource.authUserId(), updatedMeal.getUserId());
         assertEquals((Object) updatedCalories, updatedMeal.getCalories());
         assertEquals(updatedDescription, updatedMeal.getDescription());
         assertEquals(updatedDateTime, updatedMeal.getDateTime());
@@ -48,23 +48,23 @@ public class MealRestControllerUpdateTest {
 
     @Test(expected = NotFoundException.class)
     public void updateNonExistent() {
-        testRule.controller().update(
-                new Meal(999, testRule.authUserId(), LocalDateTime.now(), "desc", 100)
+        resource.controller().update(
+                new Meal(999, resource.authUserId(), LocalDateTime.now(), "desc", 100)
         );
     }
 
     @Test(expected = NotFoundException.class)
     public void updateForeign() {
-        testRule.controller().update(
-                new Meal(1, testRule.authUserId(), LocalDateTime.now(), "desc", 100)
+        resource.controller().update(
+                new Meal(1, resource.authUserId(), LocalDateTime.now(), "desc", 100)
         );
     }
 
 
     @Test(expected = IllegalArgumentException.class)
     public void updateNew() {
-        testRule.controller().update(
-                new Meal(testRule.authUserId(), LocalDateTime.now(), "desc", 100)
+        resource.controller().update(
+                new Meal(resource.authUserId(), LocalDateTime.now(), "desc", 100)
         );
     }
 }

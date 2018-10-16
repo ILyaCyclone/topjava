@@ -12,18 +12,18 @@ import static org.junit.Assert.*;
 public class MealRestControllerDeleteTest {
 
     @Rule
-    public MealRestControllerInitializeRule testRule = new MealRestControllerInitializeRule();
+    public MealRestControllerInitializeRule resource = new MealRestControllerInitializeRule();
 
 
     @Test
     public void contextLoads() {
-        assertNotNull(testRule.controller());
+        assertNotNull(resource.controller());
     }
 
     @Test
     public void deleteOwn() {
         int id = 10;
-        List<MealWithExceed> initialList = testRule.controller().getWithExceed();
+        List<MealWithExceed> initialList = resource.controller().getWithExceed();
 
         System.out.println("~~~ initialList ~~~");
         initialList.forEach(System.out::println);
@@ -32,9 +32,9 @@ public class MealRestControllerDeleteTest {
         assertTrue(initialList.stream()
                 .anyMatch(meal -> meal.getId() == id));
 
-        testRule.controller().delete(10);
+        resource.controller().delete(10);
 
-        List<MealWithExceed> afterList = testRule.controller().getWithExceed();
+        List<MealWithExceed> afterList = resource.controller().getWithExceed();
 
         assertFalse(afterList.stream()
                 .anyMatch(meal -> meal.getId() == id));
@@ -42,11 +42,11 @@ public class MealRestControllerDeleteTest {
 
     @Test(expected = NotFoundException.class)
     public void deleteNonExistent() {
-        testRule.controller().delete(99);
+        resource.controller().delete(99);
     }
 
     @Test(expected = NotFoundException.class)
     public void deleteForeign() {
-        testRule.controller().delete(1);
+        resource.controller().delete(1);
     }
 }

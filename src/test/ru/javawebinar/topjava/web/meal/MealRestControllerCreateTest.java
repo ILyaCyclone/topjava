@@ -11,11 +11,11 @@ import static org.junit.Assert.*;
 public class MealRestControllerCreateTest {
 
     @ClassRule
-    public static MealRestControllerInitializeRule testRule = new MealRestControllerInitializeRule();
+    public static MealRestControllerInitializeRule resource = new MealRestControllerInitializeRule();
 
     @Test
     public void contextLoads() {
-        assertNotNull(testRule.controller());
+        assertNotNull(resource.controller());
     }
 
     @Test
@@ -24,19 +24,19 @@ public class MealRestControllerCreateTest {
         Integer updatedCalories = 350;
         LocalDateTime updatedDateTime = LocalDateTime.of(2018, 10, 15, 10, 30);
 
-        Meal newMeal = new Meal(testRule.authUserId(), updatedDateTime, updatedDescription, updatedCalories);
+        Meal newMeal = new Meal(resource.authUserId(), updatedDateTime, updatedDescription, updatedCalories);
 
-        Meal createdMeal = testRule.controller().create(newMeal);
+        Meal createdMeal = resource.controller().create(newMeal);
         Integer createdId = createdMeal.getId();
 
         assertEquals(createdId, createdMeal.getId());
-        assertEquals(testRule.authUserId(), createdMeal.getUserId());
+        assertEquals(resource.authUserId(), createdMeal.getUserId());
         assertEquals((Object) updatedCalories, createdMeal.getCalories());
         assertEquals(updatedDescription, createdMeal.getDescription());
         assertEquals(updatedDateTime, createdMeal.getDateTime());
 
 
-        Meal storedMeal = testRule.controller().get(createdId);
+        Meal storedMeal = resource.controller().get(createdId);
 
         assertEquals(storedMeal.getId(), createdMeal.getId());
         assertEquals(storedMeal.getUserId(), createdMeal.getUserId());
@@ -48,14 +48,14 @@ public class MealRestControllerCreateTest {
     @Test
     public void createForeign() {
         Integer foreignUserId = 0;
-        Meal createdMeal = testRule.controller().create(new Meal(foreignUserId, LocalDateTime.now(), "desc", 100));
+        Meal createdMeal = resource.controller().create(new Meal(foreignUserId, LocalDateTime.now(), "desc", 100));
         assertNotEquals(foreignUserId, createdMeal.getUserId());
-        assertEquals(testRule.authUserId(), createdMeal.getUserId());
+        assertEquals(resource.authUserId(), createdMeal.getUserId());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void createNotNew() {
-        testRule.controller().create(new Meal(10, testRule.authUserId(), LocalDateTime.now(), "desc", 100));
+        resource.controller().create(new Meal(10, resource.authUserId(), LocalDateTime.now(), "desc", 100));
     }
 
 }
