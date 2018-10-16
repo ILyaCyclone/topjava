@@ -27,7 +27,13 @@ public class ValidationUtil {
 
     public static void checkNew(AbstractBaseEntity entity) {
         if (!entity.isNew()) {
-            throw new IllegalArgumentException(entity + " must be new (id=null)");
+            throw new IllegalArgumentException(entity + " must be new");
+        }
+    }
+
+    public static void checkExistent(AbstractBaseEntity entity) {
+        if (entity.isNew()) {
+            throw new IllegalArgumentException(entity + " must be existent");
         }
     }
 

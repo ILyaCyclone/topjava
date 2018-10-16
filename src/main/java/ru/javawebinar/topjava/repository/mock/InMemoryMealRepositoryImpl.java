@@ -1,15 +1,27 @@
 package ru.javawebinar.topjava.repository.mock;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
+import ru.javawebinar.topjava.to.MealWithExceed;
+import ru.javawebinar.topjava.util.DateTimeUtil;
 import ru.javawebinar.topjava.util.MealsUtil;
 
-import java.util.Collection;
-import java.util.Map;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Month;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
+@Repository
 public class InMemoryMealRepositoryImpl implements MealRepository {
+    private static final Logger logger = LoggerFactory.getLogger(InMemoryMealRepositoryImpl.class);
+
     private Map<Integer, Meal> repository = new ConcurrentHashMap<>();
     private AtomicInteger counter = new AtomicInteger(0);
 
@@ -17,30 +29,82 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
         MealsUtil.MEALS.forEach(this::save);
     }
 
+    /**
+     * if meal is new, save it
+     * if meal is not new (has ID), fetch stored meal by id and check userId equality
+     * @param meal
+     * @return
+     */
     @Override
     public Meal save(Meal meal) {
+        Objects.requireNonNull(meal.getUserId(), "meal userId is mandatory");
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
             repository.put(meal.getId(), meal);
             return meal;
+        } else {
+            // this would work, but wouldn't return null if meal does not belong to user
+//            return repository.computeIfPresent(meal.getId()
+//                    , (id, storedMeal) -> MealsUtil.mealBelongsToUser(storedMeal, meal.getUserId()) ? meal : oldMeal);
+
+            Meal storedMeal = repository.get(meal.getId());
+            if(storedMeal != null && MealsUtil.mealBelongsToUser(storedMeal, meal.getUserId())) {
+                repository.put(meal.getId(), meal);
+                return meal;
+            } else {
+                return null;
+            }
         }
-        // treat case: update, but absent in storage
-        return repository.computeIfPresent(meal.getId(), (id, oldMeal) -> meal);
     }
 
     @Override
-    public void delete(int id) {
-        repository.remove(id);
+    public boolean delete(int userId, int mealId) {
+        Meal storedMeal = repository.get(mealId);
+        if(storedMeal != null && MealsUtil.mealBelongsToUser(storedMeal, userId)) {
+            repository.remove(mealId);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
-    public Meal get(int id) {
-        return repository.get(id);
+    public Meal findOne(int userId, int mealId) {
+        Meal storedMeal = repository.get(mealId);
+        if(storedMeal != null && storedMeal.getUserId() == userId) {
+            return storedMeal;
+        } else {
+            return null;
+        }
     }
 
+//    @Override
+//    public Collection<Meal> findAll() {
+//        return repository.values();
+//    }
+
+//    public List<Meal> findByUserId(int userId) {
+//        return findAll().stream()
+//                .filter(meal -> meal.getUserId() == userId)
+//                .sorted(Comparator.comparing(Meal::getDate).reversed().thenComparing(Meal::getTime))
+//                .collect(Collectors.toList());
+//    }
+
     @Override
-    public Collection<Meal> getAll() {
-        return repository.values();
+    public List<MealWithExceed> findWithExceed(int userId, int caloriesPerDay) {
+        return findFilteredWithExceed(userId, caloriesPerDay, LocalDate.MIN, LocalDate.MAX, LocalTime.MIN, LocalTime.MAX);
+    }
+        @Override
+    public List<MealWithExceed> findFilteredWithExceed(int userId, int caloriesPerDay
+                , LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
+        return MealsUtil.getFilteredWithExceeded(repository.values().stream()
+                .filter(meal -> MealsUtil.mealBelongsToUser(meal, userId))
+                .filter(meal -> DateTimeUtil.isBetween(meal.getDate(), startDate, endDate))
+                .sorted(Comparator.comparing(Meal::getDate).reversed().thenComparing(Meal::getTime))
+                .collect(Collectors.toList())
+                , caloriesPerDay
+                , startTime
+                , endTime);
     }
 }
 
