@@ -62,7 +62,7 @@ public class JdbcMealRepositoryImpl implements MealRepository {
 
     @Override
     public Meal get(int id, int userId) {
-        return DataAccessUtils.singleResult(namedParameterJdbcTemplate.query("SELECT * FROM meal WHERE id=:id and user_id = :user_id"
+        return DataAccessUtils.singleResult(namedParameterJdbcTemplate.query("SELECT * FROM meals WHERE id=:id and user_id = :user_id"
             , new MapSqlParameterSource("id", id)
                         .addValue("user_id", userId)
             , ROW_MAPPER));
@@ -77,7 +77,7 @@ public class JdbcMealRepositoryImpl implements MealRepository {
     @Override
     public List<Meal> getBetween(LocalDateTime startDate, LocalDateTime endDate, int userId) {
         return namedParameterJdbcTemplate.query("SELECT * FROM meals WHERE user_id=:user_id " +
-                        "AND date_time >= start_date AND date_time <= end_date " +
+                        "AND date_time >= :start_date AND date_time <= :end_date " +
                         "ORDER BY date_time desc"
                 , new MapSqlParameterSource("user_id", userId)
                     .addValue("start_date", startDate)
