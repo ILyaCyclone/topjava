@@ -58,17 +58,17 @@ public class MealServiceTest {
     }
 
     @Test(expected = NotFoundException.class)
-    public void deletedNotFoundUser() throws Exception {
+    public void deleteNotFoundUser() throws Exception {
         service.delete(100003, 999);
     }
 
     @Test(expected = NotFoundException.class)
-    public void deletedNotFoundMeal() throws Exception {
+    public void deleteNotFoundMeal() throws Exception {
         service.delete(999, USER_ID);
     }
 
     @Test(expected = NotFoundException.class)
-    public void deletedAlienMeal() throws Exception {
+    public void deleteAlien() throws Exception {
         service.delete(100010, USER_ID);
     }
 
@@ -119,6 +119,13 @@ public class MealServiceTest {
         Meal actualMeal = service.get(mealId, userId);
 
         assertMatch(actualMeal, expectedMeal);
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void updateAlien() {
+        int userId = USER_ID;
+        Meal meal = new Meal(100010, LocalDateTime.of(2018, 10, 19, 13, 01), "Обед update", 1001);
+        service.update(meal, userId);
     }
 
     @Test
