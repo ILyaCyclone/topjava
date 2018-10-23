@@ -41,25 +41,24 @@ public class MealServiceTest {
 
     @Test
     public void get() {
-        Meal actual = service.get(100003, USER_ID);
-        Meal expected = USER_MEALS.get(4);
+        Meal actual = service.get(USER_MEAL3.getId(), USER_ID);
+        Meal expected = USER_MEAL3;
         assertMatch(actual, expected);
     }
 
     @Test
     public void delete() {
-        final int userId = USER_ID;
-        service.delete(100003, userId);
+        service.delete(USER_MEAL3.getId(), USER_ID);
 
-        List<Meal> actual = service.getAll(userId);
+        List<Meal> actual = service.getAll(USER_ID);
         ArrayList<Meal> expected = new ArrayList<>(MealTestData.USER_MEALS);
-        expected.remove(4);
+        expected.remove(USER_MEAL3);
         assertMatch(actual, expected);
     }
 
     @Test(expected = NotFoundException.class)
     public void deleteNotFoundUser() throws Exception {
-        service.delete(100003, 999);
+        service.delete(USER_MEAL3.getId(), 999);
     }
 
     @Test(expected = NotFoundException.class)
@@ -69,16 +68,15 @@ public class MealServiceTest {
 
     @Test(expected = NotFoundException.class)
     public void deleteAlien() throws Exception {
-        service.delete(100010, USER_ID);
+        service.delete(ADMIN_MEAL1.getId(), USER_ID);
     }
 
     @Test
     public void getBetweenDates() {
-        int userId = USER_ID;
         LocalDate startDate = LocalDate.of(2018, 10, 19);
         LocalDate endDate = LocalDate.MAX;
 
-        List<Meal> actual = service.getBetweenDates(startDate, endDate, userId);
+        List<Meal> actual = service.getBetweenDates(startDate, endDate, USER_ID);
         List<Meal> expected = USER_MEALS.stream()
                 .filter(meal -> Util.isBetween(meal.getDate(), startDate, endDate))
                 .collect(Collectors.toList());
@@ -88,11 +86,10 @@ public class MealServiceTest {
 
     @Test
     public void getBetweenDateTimes() {
-        int userId = USER_ID;
         LocalDateTime startDateTime = LocalDateTime.of(2018, 10, 19, 15, 0);
         LocalDateTime endDateTime = LocalDateTime.MAX;
 
-        List<Meal> actual = service.getBetweenDateTimes(startDateTime, endDateTime, userId);
+        List<Meal> actual = service.getBetweenDateTimes(startDateTime, endDateTime, USER_ID);
         List<Meal> expected = USER_MEALS.stream()
                 .filter(meal -> Util.isBetween(meal.getDateTime(), startDateTime, endDateTime))
                 .collect(Collectors.toList());
@@ -102,43 +99,38 @@ public class MealServiceTest {
 
     @Test
     public void getAll() {
-        int userId = USER_ID;
-        List<Meal> actual = service.getAll(userId);
-        List<Meal> expected = new ArrayList<>(USER_MEALS);
+        List<Meal> actual = service.getAll(USER_ID);
 
-        assertMatch(actual, expected);
+        assertMatch(actual, USER_MEALS);
     }
 
     @Test
     public void update() {
-        int userId = USER_ID;
-        int mealId = 100006;
-        Meal expectedMeal = new Meal(mealId, LocalDateTime.of(2018, 10, 19, 13, 01), "Обед update", 1001);
-        service.update(expectedMeal, userId);
+        Meal expectedMeal = new Meal(USER_MEAL3.getId(), LocalDateTime.of(2018, 10, 18, 22, 00), "Ужин update", 500);
+        service.update(expectedMeal, USER_ID);
 
-        Meal actualMeal = service.get(mealId, userId);
+        Meal actualMeal = service.get(USER_MEAL3.getId(), USER_ID);
 
         assertMatch(actualMeal, expectedMeal);
     }
 
     @Test(expected = NotFoundException.class)
     public void updateAlien() {
-        int userId = USER_ID;
-        Meal meal = new Meal(100010, LocalDateTime.of(2018, 10, 19, 13, 01), "Обед update", 1001);
-        service.update(meal, userId);
+        Meal meal = new Meal(ADMIN_MEAL1.getId(), LocalDateTime.of(2018, 10, 19, 13, 01), "Обед update", 1001);
+        service.update(meal, USER_ID);
     }
 
     @Test
     public void create() {
-        int userId = USER_ID;
-        Meal meal = new Meal(LocalDateTime.of(2018, 10, 19, 13, 01), "Обед update", 1001);
-        service.create(meal, userId);
+        Meal meal = new Meal(LocalDateTime.of(2018, 10, 20, 13, 00), "Обед new", 1000);
+        service.create(meal, USER_ID);
 
-        List<Meal> actual = service.getAll(userId);
+        List<Meal> actual = service.getAll(USER_ID);
 
         List<Meal> expected = new ArrayList<>(USER_MEALS);
-        expected.add(meal);
+        expected.add(0, meal);
 
-        assertContainsInAnyOrder(actual, expected);
+        assertMatch(actual, expected);
+
     }
 }
