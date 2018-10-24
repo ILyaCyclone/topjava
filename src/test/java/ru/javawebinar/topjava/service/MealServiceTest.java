@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.service;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.bridge.SLF4JBridgeHandler;
@@ -8,7 +9,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
-import ru.javawebinar.topjava.MealTestData;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.Util;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static ru.javawebinar.topjava.MealTestData.*;
+import static ru.javawebinar.topjava.UserTestData.NON_EXISTENT_USER_ID;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
 
 @ContextConfiguration({
@@ -42,8 +43,17 @@ public class MealServiceTest {
     @Test
     public void get() {
         Meal actual = service.get(USER_MEAL3.getId(), USER_ID);
-        Meal expected = USER_MEAL3;
-        assertMatch(actual, expected);
+        assertMatch(actual, USER_MEAL3);
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void getNotFoundUser() {
+        service.get(USER_MEAL3.getId(), NON_EXISTENT_USER_ID);
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void getNotFoundMeal() {
+        service.get(NON_EXISTENT_MEAL_ID, USER_ID);
     }
 
     @Test
@@ -51,19 +61,19 @@ public class MealServiceTest {
         service.delete(USER_MEAL3.getId(), USER_ID);
 
         List<Meal> actual = service.getAll(USER_ID);
-        ArrayList<Meal> expected = new ArrayList<>(MealTestData.USER_MEALS);
+        ArrayList<Meal> expected = new ArrayList<>(USER_MEALS);
         expected.remove(USER_MEAL3);
         assertMatch(actual, expected);
     }
 
     @Test(expected = NotFoundException.class)
     public void deleteNotFoundUser() throws Exception {
-        service.delete(USER_MEAL3.getId(), 999);
+        service.delete(USER_MEAL3.getId(), NON_EXISTENT_USER_ID);
     }
 
     @Test(expected = NotFoundException.class)
     public void deleteNotFoundMeal() throws Exception {
-        service.delete(999, USER_ID);
+        service.delete(NON_EXISTENT_MEAL_ID, USER_ID);
     }
 
     @Test(expected = NotFoundException.class)
@@ -123,7 +133,7 @@ public class MealServiceTest {
     @Test
     public void create() {
         Meal meal = new Meal(LocalDateTime.of(2018, 10, 20, 13, 00), "Обед new", 1000);
-        service.create(meal, USER_ID);
+        Assertions.assertThat(service.create(meal, USER_ID)).isNotNull();
 
         List<Meal> actual = service.getAll(USER_ID);
 
