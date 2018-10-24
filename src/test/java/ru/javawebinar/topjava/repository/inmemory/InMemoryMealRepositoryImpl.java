@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
-import ru.javawebinar.topjava.MealTestData;
 import ru.javawebinar.topjava.UserTestData;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
@@ -13,14 +12,13 @@ import ru.javawebinar.topjava.util.Util;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import static ru.javawebinar.topjava.MealTestData.*;
 
 @Repository
 public class InMemoryMealRepositoryImpl implements MealRepository {
@@ -32,11 +30,9 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
 
     public void init() {
         repository.clear();
-        MealTestData.USER_MEALS.forEach(
+
+        Arrays.asList(USER_MEAL6, USER_MEAL5, USER_MEAL4, USER_MEAL3, USER_MEAL2, USER_MEAL1).forEach(
                 meal -> repository.computeIfAbsent(UserTestData.USER_ID, ConcurrentHashMap::new)
-                    .put(meal.getId(), meal));
-        MealTestData.ADMIN_MEALS.forEach(
-                meal -> repository.computeIfAbsent(UserTestData.ADMIN_ID, ConcurrentHashMap::new)
                     .put(meal.getId(), meal));
     }
 

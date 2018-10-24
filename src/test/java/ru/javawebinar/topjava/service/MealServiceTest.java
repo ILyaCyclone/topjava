@@ -1,6 +1,5 @@
 package ru.javawebinar.topjava.service;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.bridge.SLF4JBridgeHandler;
@@ -10,15 +9,13 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.util.Util;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.UserTestData.NON_EXISTENT_USER_ID;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
@@ -59,11 +56,9 @@ public class MealServiceTest {
     @Test
     public void delete() {
         service.delete(USER_MEAL3.getId(), USER_ID);
-
         List<Meal> actual = service.getAll(USER_ID);
-        ArrayList<Meal> expected = new ArrayList<>(USER_MEALS);
-        expected.remove(USER_MEAL3);
-        assertMatch(actual, expected);
+
+        assertMatch(actual, USER_MEAL6, USER_MEAL5, USER_MEAL4, USER_MEAL2, USER_MEAL1);
     }
 
     @Test(expected = NotFoundException.class)
@@ -87,31 +82,25 @@ public class MealServiceTest {
         LocalDate endDate = LocalDate.MAX;
 
         List<Meal> actual = service.getBetweenDates(startDate, endDate, USER_ID);
-        List<Meal> expected = USER_MEALS.stream()
-                .filter(meal -> Util.isBetween(meal.getDate(), startDate, endDate))
-                .collect(Collectors.toList());
 
-        assertMatch(actual, expected);
+        assertMatch(actual, USER_MEAL6, USER_MEAL5, USER_MEAL4);
     }
 
     @Test
     public void getBetweenDateTimes() {
-        LocalDateTime startDateTime = LocalDateTime.of(2018, 10, 19, 15, 0);
+        LocalDateTime startDateTime = LocalDateTime.of(2018, 10, 19, 13, 0);
         LocalDateTime endDateTime = LocalDateTime.MAX;
 
         List<Meal> actual = service.getBetweenDateTimes(startDateTime, endDateTime, USER_ID);
-        List<Meal> expected = USER_MEALS.stream()
-                .filter(meal -> Util.isBetween(meal.getDateTime(), startDateTime, endDateTime))
-                .collect(Collectors.toList());
 
-        assertMatch(actual, expected);
+        assertMatch(actual, USER_MEAL6, USER_MEAL5);
     }
 
     @Test
     public void getAll() {
         List<Meal> actual = service.getAll(USER_ID);
 
-        assertMatch(actual, USER_MEALS);
+        assertMatch(actual, USER_MEAL6, USER_MEAL5, USER_MEAL4, USER_MEAL3, USER_MEAL2, USER_MEAL1);
     }
 
     @Test
@@ -132,15 +121,12 @@ public class MealServiceTest {
 
     @Test
     public void create() {
-        Meal meal = new Meal(LocalDateTime.of(2018, 10, 20, 13, 00), "Обед new", 1000);
-        Assertions.assertThat(service.create(meal, USER_ID)).isNotNull();
+        Meal newMeal = new Meal(LocalDateTime.of(2018, 10, 20, 13, 00), "Обед new", 1000);
+        assertThat(service.create(newMeal, USER_ID)).isNotNull();
 
         List<Meal> actual = service.getAll(USER_ID);
 
-        List<Meal> expected = new ArrayList<>(USER_MEALS);
-        expected.add(0, meal);
-
-        assertMatch(actual, expected);
+        assertMatch(actual, newMeal, USER_MEAL6, USER_MEAL5, USER_MEAL4, USER_MEAL3, USER_MEAL2, USER_MEAL1);
 
     }
 }
