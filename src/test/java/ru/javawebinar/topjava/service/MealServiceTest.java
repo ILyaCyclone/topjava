@@ -1,9 +1,12 @@
 package ru.javawebinar.topjava.service;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.Stopwatch;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,8 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 import javax.validation.ConstraintViolationException;
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.assertj.core.util.Throwables.getRootCause;
 import static org.hamcrest.CoreMatchers.containsString;
@@ -42,6 +47,43 @@ public class MealServiceTest {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
+
+    private static Map<String, Long> testFinishedNanos = new HashMap<>();
+    @Rule
+    public Stopwatch stopwatch = new Stopwatch() {
+        @Override
+        protected void finished(long nanos, Description description) {
+            testFinishedNanos.put(description.getMethodName(), nanos);
+
+            System.out.println(String.format("Test \"%s\" finished in %s seconds",
+                    description.getMethodName(), formatNanosAsSeconds(nanos, 2)));
+        }
+    };
+
+    @ClassRule
+    public static Stopwatch classStopwatch = new Stopwatch() {
+        @Override
+        protected void finished(long nanos, Description description) {
+            String line = "\n--------------------------------";
+            StringBuilder sb = new StringBuilder(line);
+            sb.append("\nTest | Time, s");
+
+            description.getChildren().forEach(d -> {
+                sb.append(String.format("\n\"%s\" | %s", d.getMethodName(), formatNanosAsSeconds(testFinishedNanos.get(d.getMethodName()), 2)));
+            });
+            sb.append(line);
+            System.out.println(sb.toString());
+        }
+    };
+
+    private static String formatNanosAsSeconds(long nanos, int floatDigits) {
+        // can't format TimeUnit.NANOSECONDS.toMillis(nanos) with floating point
+        String format = "%." + floatDigits + "f";
+        return String.format(format, (nanos / 1_000_000_000f));
+    }
+
+
+
 
     @Test
     public void delete() {
@@ -85,13 +127,14 @@ public class MealServiceTest {
     public void updateIllegalCalories() {
         expectConstrainViolationException(getUpdatedIllegalCalories(), "calories");
     }
+
     @Test
     public void updateIllegalDescription() {
         expectConstrainViolationException(getUpdatedIllegalDescription(), "description");
     }
+
     private void expectConstrainViolationException(Meal updatedMeal, String exceptionMessageContains) {
-        // JUnit 4.13 will have expectThrows() which returns the thrown exception
-        // use try-catch, getRootCause in JUnit 4.12
+        // see https://github.com/junit-team/junit4/pull/778
         try {
             service.update(updatedMeal, USER_ID);
             Assert.fail("Expected " + ConstraintViolationException.class.getName());
