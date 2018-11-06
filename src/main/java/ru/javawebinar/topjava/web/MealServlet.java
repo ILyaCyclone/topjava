@@ -33,7 +33,6 @@ public class MealServlet extends HttpServlet {
 //        System.setProperty("spring.profiles.active", "postgres,datajpa");
 
         springContext = new ClassPathXmlApplicationContext(new String[]{"spring/spring-app.xml", "spring/spring-db.xml"}, false);
-        // read active profiles from web.xml
         springContext.getEnvironment().addActiveProfile(Profiles.getActiveDbProfile());
         springContext.getEnvironment().addActiveProfile(Profiles.REPOSITORY_IMPLEMENTATION);
         springContext.refresh();
