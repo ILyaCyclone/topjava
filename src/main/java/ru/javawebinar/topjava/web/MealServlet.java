@@ -34,7 +34,7 @@ public class MealServlet extends HttpServlet {
 
         springContext = new ClassPathXmlApplicationContext(new String[]{"spring/spring-app.xml", "spring/spring-db.xml"}, false);
         // read active profiles from web.xml
-        springContext.getEnvironment().addActiveProfile(config.getServletContext().getInitParameter("active-db"));
+        springContext.getEnvironment().addActiveProfile(Profiles.getActiveDbProfile());
         springContext.getEnvironment().addActiveProfile(Profiles.REPOSITORY_IMPLEMENTATION);
         springContext.refresh();
 

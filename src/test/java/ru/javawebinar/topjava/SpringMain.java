@@ -19,7 +19,7 @@ public class SpringMain {
         // java 7 Automatic resource management
         try (ConfigurableApplicationContext appCtx = new ClassPathXmlApplicationContext(new String[]{"spring/spring-app.xml", "spring/spring-db.xml", "spring/inmemory.xml"}, false)) {
             appCtx.getEnvironment().addActiveProfile(Profiles.getActiveDbProfile());
-            appCtx.getEnvironment().addActiveProfile("inmemory");
+            appCtx.getEnvironment().addActiveProfile(Profiles.REPOSITORY_IMPLEMENTATION);
             appCtx.refresh();
 
             System.out.println("Bean definition names: " + Arrays.toString(appCtx.getBeanDefinitionNames()));
