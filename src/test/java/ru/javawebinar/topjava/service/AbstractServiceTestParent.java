@@ -1,6 +1,7 @@
 package ru.javawebinar.topjava.service;
 
 import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.Stopwatch;
@@ -29,7 +30,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 public abstract class AbstractServiceTestParent {
     private static final Logger log = getLogger("result");
 
-    private static StringBuilder results = new StringBuilder();
+    private static StringBuilder results;
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -48,6 +49,11 @@ public abstract class AbstractServiceTestParent {
     static {
         // needed only for java.util.logging (postgres driver)
         SLF4JBridgeHandler.install();
+    }
+
+    @BeforeClass
+    public static void setUpResultsBuilder() {
+        results = new StringBuilder();
     }
 
     @AfterClass
