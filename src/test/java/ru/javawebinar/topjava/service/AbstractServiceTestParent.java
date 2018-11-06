@@ -33,7 +33,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 public abstract class AbstractServiceTestParent {
     private static final Logger log = getLogger("result");
 
-    private static StringBuilder results;
+    private static StringBuilder results = new StringBuilder();
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -56,7 +56,7 @@ public abstract class AbstractServiceTestParent {
 
     @BeforeClass
     public static void setUpResultsBuilder() {
-        results = new StringBuilder();
+        results.setLength(0);
     }
 
     @AfterClass
