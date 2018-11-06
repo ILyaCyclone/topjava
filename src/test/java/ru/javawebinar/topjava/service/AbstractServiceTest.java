@@ -12,7 +12,10 @@ import java.util.concurrent.TimeUnit;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-public class BaseServiceTest {
+/**
+ * make class abstract so that test runner wouldn't run it
+ */
+public abstract class AbstractServiceTest {
     private static final Logger log = getLogger("result");
 
     private static StringBuilder results = new StringBuilder();
