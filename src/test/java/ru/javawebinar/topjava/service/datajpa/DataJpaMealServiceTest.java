@@ -8,7 +8,7 @@ import ru.javawebinar.topjava.UserTestData;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.AbstractMealServiceTest;
 
-@ActiveProfiles({Profiles.POSTGRES_DB, Profiles.DATAJPA})
+@ActiveProfiles({Profiles.ACTIVE_DB, Profiles.DATAJPA})
 public class DataJpaMealServiceTest extends AbstractMealServiceTest {
     @Test
     public void getWithUser() {

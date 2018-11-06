@@ -5,7 +5,7 @@ import ru.javawebinar.topjava.Profiles;
 import ru.javawebinar.topjava.service.AbstractUserServiceTest;
 
 
-@ActiveProfiles({Profiles.POSTGRES_DB, Profiles.JDBC})
+@ActiveProfiles({Profiles.ACTIVE_DB, Profiles.JDBC})
 public class JdbcUserServiceTest extends AbstractUserServiceTest {
 
 }

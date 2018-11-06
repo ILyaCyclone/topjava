@@ -4,6 +4,7 @@ import org.junit.*;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.javawebinar.topjava.Profiles;
+import ru.javawebinar.topjava.TestProfiles;
 import ru.javawebinar.topjava.UserTestData;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.inmemory.InMemoryUserRepositoryImpl;
@@ -22,7 +23,7 @@ public class InMemoryAdminRestControllerTest {
     @BeforeClass
     public static void beforeClass() {
         appCtx = new ClassPathXmlApplicationContext(new String[]{"spring/spring-app.xml", "spring/inmemory.xml"}, false);
-        appCtx.getEnvironment().setDefaultProfiles(Profiles.HSQL_DB, "inmemory");
+        appCtx.getEnvironment().setDefaultProfiles(Profiles.HSQL_DB, TestProfiles.INMEMORY);
         appCtx.refresh();
         System.out.println("\n" + Arrays.toString(appCtx.getBeanDefinitionNames()) + "\n");
         controller = appCtx.getBean(AdminRestController.class);

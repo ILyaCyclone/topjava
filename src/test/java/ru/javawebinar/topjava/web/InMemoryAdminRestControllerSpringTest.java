@@ -9,6 +9,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.javawebinar.topjava.Profiles;
+import ru.javawebinar.topjava.TestProfiles;
 import ru.javawebinar.topjava.UserTestData;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.inmemory.InMemoryUserRepositoryImpl;
@@ -21,7 +22,7 @@ import static ru.javawebinar.topjava.UserTestData.ADMIN;
 
 @ContextConfiguration({"classpath:spring/spring-app.xml", "classpath:spring/inmemory.xml"})
 @RunWith(SpringRunner.class)
-@ActiveProfiles({Profiles.HSQL_DB, "inmemory"})
+@ActiveProfiles({Profiles.HSQL_DB, TestProfiles.INMEMORY})
 public class InMemoryAdminRestControllerSpringTest {
 
     @Autowired

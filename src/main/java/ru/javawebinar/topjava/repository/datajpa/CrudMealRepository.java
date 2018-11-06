@@ -27,6 +27,7 @@ public interface CrudMealRepository extends JpaRepository<Meal, Integer> {
     @Transactional
     Meal save(Meal meal);
 
+    @Transactional
     @Query("SELECT m FROM Meal m INNER JOIN FETCH m.user WHERE m.id = ?1")
     Optional<Meal> findByIdWithUser(int id);
 }
