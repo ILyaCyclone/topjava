@@ -11,6 +11,8 @@ import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.service.AbstractUserServiceTest;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
+import java.util.List;
+
 import static ru.javawebinar.topjava.MealTestData.*;
 
 
@@ -32,6 +34,7 @@ public class DataJpaUserServiceTest extends AbstractUserServiceTest {
     @Test
     public void getWithMealEmpty() throws Exception {
         User hungryUser = new User(null, "Hungry", "hunger@gmail.com", "password", Role.ROLE_USER);
+        hungryUser.setMeals(List.of(MEAL1, MEAL2));
         User storedUser = service.create(hungryUser);
         User storedUserWithMeal = service.getWithMeal(storedUser.getId());
         Assertions.assertThat(storedUserWithMeal.getMeals().isEmpty()).withFailMessage("Hungry user meal should be empty");

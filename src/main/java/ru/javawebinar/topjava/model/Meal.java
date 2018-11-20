@@ -95,6 +95,14 @@ public class Meal extends AbstractBaseEntity {
     }
 
     public void setUser(User user) {
+        if(this.user == user) return;
+
+        if(this.user != null) {
+            this.user.getMeals().remove(this);
+        }
+        if(user != null && !user.getMeals().contains(this)) {
+            user.getMeals().add(this);
+        }
         this.user = user;
     }
 

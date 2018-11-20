@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.model;
 
+import org.hibernate.annotations.Cascade;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.util.CollectionUtils;
 
@@ -54,8 +55,10 @@ public class User extends AbstractNamedEntity {
     private int caloriesPerDay = DEFAULT_CALORIES_PER_DAY;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    // could use @OrderBy("dateTime desc") instead of ORDER BY in query
-    private List<Meal> meals;
+    @Cascade(org.hibernate.annotations.CascadeType.PERSIST) // detached entity passed to persist
+    // could use @OrderBy instead of ORDER BY in query
+//    @OrderBy("dateTime desc")
+    private List<Meal> meals = new ArrayList<>();
 
     public User() {
     }
@@ -131,6 +134,7 @@ public class User extends AbstractNamedEntity {
     }
 
     public void setMeals(List<Meal> meals) {
+        meals.forEach(m -> {if(m.getUser() != null && !m.getUser().equals(this)) m.setUser(this);});
         this.meals = meals;
     }
 
