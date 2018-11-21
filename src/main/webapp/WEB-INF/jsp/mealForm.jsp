@@ -7,7 +7,7 @@
 <body>
 <jsp:include page="fragments/bodyHeader.jsp"/>
 <section>
-    <h2><spring:message code="${forCreation ? 'mealform.create' : 'mealform.update'}"/></h2>
+    <h2><spring:message code="${meal.isNew() ? 'mealform.create' : 'mealform.update'}"/></h2>
     <hr>
     <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.Meal" scope="request"/>
     <form method="post" action="${pageContext.request.contextPath}/meals">
