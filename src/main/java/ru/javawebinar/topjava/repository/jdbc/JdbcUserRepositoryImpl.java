@@ -17,9 +17,7 @@ import ru.javawebinar.topjava.repository.UserRepository;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
@@ -77,9 +75,7 @@ public class JdbcUserRepositoryImpl implements UserRepository {
     public User get(int id) {
         List<User> users = jdbcTemplate.query("SELECT * FROM users WHERE id=?", ROW_MAPPER, id);
         User user = DataAccessUtils.singleResult(users);
-        if (user != null) {
-            assignRoles(user);
-        }
+        assignRoles(user);
         return user;
     }
 
@@ -88,9 +84,7 @@ public class JdbcUserRepositoryImpl implements UserRepository {
 //        return jdbcTemplate.queryForObject("SELECT * FROM users WHERE email=?", ROW_MAPPER, email);
         List<User> users = jdbcTemplate.query("SELECT * FROM users WHERE email=?", ROW_MAPPER, email);
         User user = DataAccessUtils.singleResult(users);
-        if (user != null) {
-            assignRoles(user);
-        }
+        assignRoles(user);
         return user;
     }
 
@@ -129,49 +123,28 @@ public class JdbcUserRepositoryImpl implements UserRepository {
 
 
     private void assignRoles(final User user) {
+        if (user == null) return;
         assignRoles(Collections.singletonList(user));
     }
 
     private void assignRoles(final List<User> users) {
         if (users.isEmpty()) return;
 
-        class UserRole {
-            private int userId;
-            private Role role;
-
-            public UserRole(int userId, Role role) {
-                this.userId = userId;
-                this.role = role;
-            }
-
-            public int getUserId() {
-                return userId;
-            }
-
-            public Role getRole() {
-                return role;
-            }
-        }
-
         // collect users IDs
         List<Integer> ids = users.stream()
                 .map(User::getId)
                 .collect(Collectors.toList());
 
-        // query user_roles
-        NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
-        List<UserRole> userRoles = namedParameterJdbcTemplate.query("SELECT * FROM user_roles WHERE user_id in (:ids)"
+
+        Map<Integer, Set<Role>> userRoles = new HashMap<>();
+        namedParameterJdbcTemplate.query("SELECT * FROM user_roles WHERE user_id in (:ids)"
                 , new MapSqlParameterSource("ids", ids)
-                , ((rs, i) -> new UserRole(rs.getInt("USER_ID"), Role.valueOf(rs.getString("ROLE")))));
+                , rs -> {
+                    userRoles.computeIfAbsent(rs.getInt("USER_ID"), userId -> EnumSet.noneOf(Role.class))
+                            .add(Role.valueOf(rs.getString("ROLE")));
+                });
 
-        // assign roles to users
-        users.forEach(u -> u.setRoles(
-                userRoles.stream()
-                        .filter(ur -> ur.getUserId() == u.getId())
-                        .map(UserRole::getRole)
-                        .collect(Collectors.toList())
-        ));
-
+        users.forEach(u -> u.setRoles(userRoles.get(u.getId())));
     }
 
 }
