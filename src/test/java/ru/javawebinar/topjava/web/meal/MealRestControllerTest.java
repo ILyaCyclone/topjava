@@ -95,11 +95,19 @@ class MealRestControllerTest extends AbstractControllerTest {
         List<Meal> dateFilteredMeals = mealService.getBetweenDates(startDate.toLocalDate(), endDate.toLocalDate(), UserTestData.USER_ID);
         List<MealTo> mealToExpected = MealsUtil.getFilteredWithExcess(dateFilteredMeals, UserTestData.USER.getCaloriesPerDay(), startTime.toLocalTime(), endTime.toLocalTime());
 
-        mockMvc.perform(get(REST_URL + "filter?startDate=" + startDate.format(DateTimeFormatter.ISO_DATE_TIME)
-                + "&startTime=" + startTime.format(DateTimeFormatter.ISO_DATE_TIME)
-                + "&endDate=" + endDate.format(DateTimeFormatter.ISO_DATE_TIME)
-                + "&endTime=" + endTime.format(DateTimeFormatter.ISO_DATE_TIME)))
-                .andDo(print())
+        mockMvc.perform(get(REST_URL + "filter"
+//                // use this block if using @DateTimeFormat in MealRestController.getBetween
+//                + "?startDate=" + startDate.format(DateTimeFormatter.ISO_DATE_TIME)
+//                + "&startTime=" + startTime.format(DateTimeFormatter.ISO_DATE_TIME)
+//                + "&endDate=" + endDate.format(DateTimeFormatter.ISO_DATE_TIME)
+//                + "&endTime=" + endTime.format(DateTimeFormatter.ISO_DATE_TIME)
+                        // use this block if using custom formatters
+                        + "?startDate=" + startDate.format(DateTimeFormatter.ISO_DATE)
+                        + "&startTime=" + startTime.format(DateTimeFormatter.ISO_TIME)
+                        + "&endDate=" + endDate.format(DateTimeFormatter.ISO_DATE)
+                        + "&endTime=" + endTime.format(DateTimeFormatter.ISO_TIME)
+
+        )).andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(contentJson(mealToExpected));
