@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static ru.javawebinar.topjava.UserTestData.*;
 
 public abstract class AbstractUserServiceTest extends AbstractServiceTest {
@@ -88,4 +89,21 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
         List<User> all = service.getAll();
         assertMatch(all, ADMIN, USER);
     }
+
+    @Test
+    void enable() throws Exception {
+        service.enable(USER_ID, true);
+
+        User user = service.get(USER_ID);
+        assertTrue(user.isEnabled());
+    }
+
+    @Test
+    void disable() throws Exception {
+        service.enable(USER_ID, false);
+
+        User user = service.get(USER_ID);
+        assertTrue(!user.isEnabled());
+    }
+
 }
