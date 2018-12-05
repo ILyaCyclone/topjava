@@ -28,9 +28,22 @@ function deleteRow(id) {
 }
 
 function updateTable() {
-    $.get(ajaxUrl, function (data) {
+    let $filter = $("#filterForm");
+    let params = null;
+    let localAjaxUrl = ajaxUrl;
+    if ($filter.length) {
+        params = $filter.serialize();
+        localAjaxUrl += "filter";
+    }
+    $.get(localAjaxUrl, params, function (data) {
         datatableApi.clear().rows.add(data).draw();
     });
+}
+
+function resetFilter() {
+    let $filter = $("#filterForm");
+    $filter.trigger('reset');
+    updateTable();
 }
 
 function save() {
