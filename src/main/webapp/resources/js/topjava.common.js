@@ -1,5 +1,7 @@
 let context, form;
-const humanDateRegExp = new RegExp("(\\d{2})\\.(\\d{2})\\.(\\d{4}) (\\d{2}:\\d{2})");
+// const humanDateRegExp = new RegExp("(\\d{2})\\.(\\d{2})\\.(\\d{4}) (\\d{2}:\\d{2})");
+const humanDateRegExp = new RegExp("(\\d{4})\\-(\\d{2})\\-(\\d{2}) (\\d{2}:\\d{2})");
+const isoDateRegExp = new RegExp("(\\d{4})\\-(\\d{2})\\-(\\d{2})T(\\d{2}:\\d{2}):\\d{2}");
 
 function makeEditable(ctx) {
     context = ctx;
@@ -10,6 +12,24 @@ function makeEditable(ctx) {
 
     // solve problem with cache in IE: https://stackoverflow.com/a/4303862/548473
     $.ajaxSetup({cache: false});
+
+    // init datepicker
+    $.datetimepicker.setLocale('ru');
+    $(".datetimepicker").each(function () {
+        let pickertype = $(this).attr("data-pickertype");
+        let options = null;
+        switch (pickertype) {
+            case "date":
+                options = {format: "Y-m-d", timepicker: false};
+                break;
+            case "time":
+                options = {format: "H:i", datepicker: false};
+                break;
+            default:
+                options = {format: "Y-m-d H:i"};
+        }
+        $(this).datetimepicker(options);
+    });
 }
 
 function add() {
@@ -22,6 +42,8 @@ function updateRow(id) {
     $("#modalTitle").html(i18n["editTitle"]);
     $.get(context.ajaxUrl + id, function (data) {
         $.each(data, function (key, value) {
+            let humanDate = isoDateToHumanDate(value);
+            if (humanDate != null) value = humanDate;
             form.find("input[name='" + key + "']").val(value);
         });
         $('#editRow').modal();
@@ -43,18 +65,23 @@ function updateTableByData(data) {
 }
 
 function save() {
-    let data = form.serialize();
-    // convert date from human format to ISO date
-    for (let key in data) {
-        let isoDate = humanDateToIsoDate(data[key]);
-        if (isoDate != null) {
-            data[key] = isoDate;
-        }
+    // let data = form.serialize();
+
+    let dataArray = form.serializeArray();
+    let parameters = [];
+    // // convert date from human format to ISO date
+    for (let i = 0; i < dataArray.length; i++) {
+        let dataItem = dataArray[i];
+
+        let isoDate = humanDateToIsoDate(dataItem.value);
+        if (isoDate != null) dataItem.value = isoDate;
+        parameters.push(dataItem.name + "=" + encodeURI(dataItem.value));
     }
+
     $.ajax({
         type: "POST",
         url: context.ajaxUrl,
-        data: data
+        data: parameters.join("&")
     }).done(function () {
         $("#editRow").modal("hide");
         context.updateTable();
@@ -102,15 +129,28 @@ function renderDeleteBtn(data, type, row) {
     }
 }
 
-function humanDateToIsoDate(str) {
-    var dateParts = humanDateRegExp.exec(str);
+function humanDateToIsoDate(humanDateStr) {
+    let dateParts = humanDateRegExp.exec(humanDateStr);
     if (dateParts == null) {
         return null;
     } else {
-        let yyyy = dateParts[3];
+        let yyyy = dateParts[1];
         let MM = dateParts[2];
-        let dd = dateParts[1];
+        let dd = dateParts[3];
         let hhmm = dateParts[4];
         return yyyy + "-" + MM + "-" + dd + "T" + hhmm + ":00";
+    }
+}
+
+function isoDateToHumanDate(isoDateStr) {
+    let dateParts = isoDateRegExp.exec(isoDateStr);
+    if (dateParts == null) {
+        return null;
+    } else {
+        let yyyy = dateParts[1];
+        let MM = dateParts[2];
+        let dd = dateParts[3];
+        let hhmm = dateParts[4];
+        return yyyy + "-" + MM + "-" + dd + " " + hhmm;
     }
 }
