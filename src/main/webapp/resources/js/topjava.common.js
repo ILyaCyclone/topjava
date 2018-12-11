@@ -1,4 +1,5 @@
 let context, form;
+const humanDateRegExp = new RegExp("(\\d{2})\\.(\\d{2})\\.(\\d{4}) (\\d{2}:\\d{2})");
 
 function makeEditable(ctx) {
     context = ctx;
@@ -42,10 +43,18 @@ function updateTableByData(data) {
 }
 
 function save() {
+    let data = form.serialize();
+    // convert date from human format to ISO date
+    for (let key in data) {
+        let isoDate = humanDateToIsoDate(data[key]);
+        if (isoDate != null) {
+            data[key] = isoDate;
+        }
+    }
     $.ajax({
         type: "POST",
         url: context.ajaxUrl,
-        data: form.serialize()
+        data: data
     }).done(function () {
         $("#editRow").modal("hide");
         context.updateTable();
@@ -90,5 +99,18 @@ function renderEditBtn(data, type, row) {
 function renderDeleteBtn(data, type, row) {
     if (type === "display") {
         return "<a onclick='deleteRow(" + row.id + ");'><span class='fa fa-remove'></span></a>";
+    }
+}
+
+function humanDateToIsoDate(str) {
+    var dateParts = humanDateRegExp.exec(str);
+    if (dateParts == null) {
+        return null;
+    } else {
+        let yyyy = dateParts[3];
+        let MM = dateParts[2];
+        let dd = dateParts[1];
+        let hhmm = dateParts[4];
+        return yyyy + "-" + MM + "-" + dd + "T" + hhmm + ":00";
     }
 }

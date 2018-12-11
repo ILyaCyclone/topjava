@@ -30,6 +30,6 @@ public class DateTimeUtil {
     }
 
     public static LocalDateTime parseLocalDateTime(String str) {
-        return StringUtils.isEmpty(str) ? null : LocalDateTime.parse(str, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
+        return StringUtils.isEmpty(str) ? null : LocalDateTime.parse(str, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
     }
 }

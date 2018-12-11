@@ -50,8 +50,11 @@ public class MealTo extends BaseTo implements Serializable {
         return excess;
     }
 
-    //    public void setDateTime(@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime dateTime) {
+    // could not get inline formatter to work, moved to DateTimeFormatters
+//    public void setDateTime(@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") LocalDateTime dateTime) {
+//    public void setDateTime(@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime dateTime) {
 //    public void setDateTime(@DateTimeFormat(pattern = "YYYY-MM-DD'T'HH:mm") LocalDateTime dateTime) {
+//    public void setDateTime(@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateTime) {
     public void setDateTime(LocalDateTime dateTime) {
         this.dateTime = dateTime;
     }
