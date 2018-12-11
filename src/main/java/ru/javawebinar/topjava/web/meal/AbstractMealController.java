@@ -8,6 +8,7 @@ import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.util.DateTimeUtil;
 import ru.javawebinar.topjava.util.MealsUtil;
+import ru.javawebinar.topjava.web.AbstractController;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
 import java.time.LocalDate;
@@ -18,7 +19,7 @@ import static ru.javawebinar.topjava.util.Util.orElse;
 import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
 import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
 
-public abstract class AbstractMealController {
+public abstract class AbstractMealController extends AbstractController {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Autowired
@@ -49,6 +50,12 @@ public abstract class AbstractMealController {
         return service.create(meal, userId);
     }
 
+    public void update(MealTo mealTo, int id) {
+        log.info("update {} with id={}", mealTo, id);
+        int userId = SecurityUtil.authUserId();
+        assureIdConsistent(mealTo, id);
+        service.update(mealTo, userId);
+    }
     public void update(Meal meal, int id) {
         int userId = SecurityUtil.authUserId();
         assureIdConsistent(meal, id);
