@@ -131,6 +131,6 @@
     i18n["addTitle"] = '<spring:message code="meal.add"/>';
     i18n["editTitle"] = '<spring:message code="meal.edit"/>';
 
-    <jsp:include page="fragments/i18n.jsp"/>
+    <jsp:include page="fragments/i18nCommon.jsp"/>
 </script>
 </html>
