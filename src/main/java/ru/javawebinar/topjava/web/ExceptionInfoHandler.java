@@ -7,6 +7,9 @@ import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -61,5 +64,28 @@ public class ExceptionInfoHandler {
             log.warn("{} at request  {}: {}", errorType, req.getRequestURL(), rootCause.toString());
         }
         return new ErrorInfo(req.getRequestURL(), errorType, ValidationUtil.getMessage(rootCause));
+    }
+
+
+
+    @ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)  // 422
+    @ExceptionHandler({BindException.class})
+    public ErrorInfo handleBindException(HttpServletRequest req, BindException e) {
+        BindingResult bindingResult = e.getBindingResult();
+        return errorInfoForBindingResult(req, bindingResult);
+    }
+
+    @ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)  // 422
+    @ExceptionHandler({MethodArgumentNotValidException.class})
+    public ErrorInfo handleMethodArgumentNotValidException(HttpServletRequest req, MethodArgumentNotValidException e) {
+        BindingResult bindingResult = e.getBindingResult();
+        return errorInfoForBindingResult(req, bindingResult);
+    }
+
+    private static ErrorInfo errorInfoForBindingResult(HttpServletRequest req, BindingResult bindingResult) {
+        //TODO get error message from bindingResult without ResponseEntity
+        String errorMessage = ValidationUtil.getErrorResponse(bindingResult).getBody();
+        log.warn("{} at request  {}: {}", VALIDATION_ERROR, req.getRequestURL(), errorMessage);
+        return new ErrorInfo(req.getRequestURL(), VALIDATION_ERROR, errorMessage);
     }
 }
