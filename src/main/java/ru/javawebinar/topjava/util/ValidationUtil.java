@@ -2,12 +2,15 @@ package ru.javawebinar.topjava.util;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import ru.javawebinar.topjava.HasId;
 import ru.javawebinar.topjava.util.exception.IllegalRequestDataException;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
+import java.util.List;
 import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 public class ValidationUtil {
 
@@ -71,7 +74,24 @@ public class ValidationUtil {
                         joiner.add(msg);
                     }
                 });
+
+
         return new ResponseEntity<>(joiner.toString(), HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
+    public static List<String> getBindingErrorMessages(BindingResult result) {
+        return result.getFieldErrors().stream()
+                .map(fe -> {
+                    String msg = fe.getDefaultMessage();
+                    if (msg != null) {
+                        if (!msg.startsWith(fe.getField())) {
+                            msg = fe.getField() + ' ' + msg;
+                        }
+                    }
+                    return msg;
+                })
+                .filter(StringUtils::hasText)
+                .collect(Collectors.toList());
     }
 
     public static String getMessage(Throwable e) {

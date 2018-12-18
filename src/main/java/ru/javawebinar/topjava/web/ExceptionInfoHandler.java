@@ -22,6 +22,7 @@ import ru.javawebinar.topjava.util.exception.IllegalRequestDataException;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 import static ru.javawebinar.topjava.util.exception.ErrorType.*;
 
@@ -83,9 +84,8 @@ public class ExceptionInfoHandler {
     }
 
     private static ErrorInfo errorInfoForBindingResult(HttpServletRequest req, BindingResult bindingResult) {
-        //TODO get error message from bindingResult without ResponseEntity
-        String errorMessage = ValidationUtil.getErrorResponse(bindingResult).getBody();
-        log.warn("{} at request  {}: {}", VALIDATION_ERROR, req.getRequestURL(), errorMessage);
-        return new ErrorInfo(req.getRequestURL(), VALIDATION_ERROR, errorMessage);
+        List<String> errorMessages = ValidationUtil.getBindingErrorMessages(bindingResult);
+        log.warn("{} at request  {}: {}", VALIDATION_ERROR, req.getRequestURL(), String.join(",", errorMessages));
+        return new ErrorInfo(req.getRequestURL(), VALIDATION_ERROR, errorMessages);
     }
 }
