@@ -10,7 +10,6 @@ public class RegistrationUserToValidator implements Validator {
     private final UserService userService;
 
     public RegistrationUserToValidator(UserService userService) {
-
         this.userService = userService;
     }
 
