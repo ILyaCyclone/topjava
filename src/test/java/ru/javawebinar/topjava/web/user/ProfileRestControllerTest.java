@@ -10,6 +10,8 @@ import ru.javawebinar.topjava.util.UserUtil;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.core.StringContains.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -74,5 +76,59 @@ class ProfileRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isNoContent());
 
         assertMatch(userService.getByEmail("newemail@ya.ru"), UserUtil.updateFromTo(new User(USER), updatedTo));
+    }
+
+
+    @Test
+    void testRegisterCaloriesValidationError() throws Exception {
+        UserTo createdTo = new UserTo(null, "newName", "newemail@ya.ru", "newPassword", 5);
+        registerValidationError(createdTo, "caloriesPerDay");
+    }
+
+    @Test
+    void testRegisterPasswordValidationError() throws Exception {
+        UserTo createdTo = new UserTo(null, "newName", "newemail@ya.ru", "1234", 1500);
+        updateValidationError(createdTo, "password");
+    }
+
+    @Test
+    void testRegisterNameValidationError() throws Exception {
+        UserTo createdTo = new UserTo(null, "o", "newemail@ya.ru", "newPassword", 1500);
+        updateValidationError(createdTo, "name");
+    }
+
+    @Test
+    void testUpdateCaloriesValidationError() throws Exception {
+        UserTo updatedTo = new UserTo(null, "newName", "newemail@ya.ru", "newPassword", 5);
+        updateValidationError(updatedTo, "caloriesPerDay");
+    }
+
+    @Test
+    void testUpdatePasswordValidationError() throws Exception {
+        UserTo updatedTo = new UserTo(null, "newName", "newemail@ya.ru", "1234", 1500);
+        updateValidationError(updatedTo, "password");
+    }
+
+    @Test
+    void testUpdateNameValidationError() throws Exception {
+        UserTo updatedTo = new UserTo(null, "o", "newemail@ya.ru", "newPassword", 1500);
+        updateValidationError(updatedTo, "name");
+    }
+
+    void updateValidationError(UserTo userTo, String errorField) throws Exception {
+        mockMvc.perform(put(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(USER))
+                .content(JsonUtil.writeValue(userTo)))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(content().string(allOf(containsString(errorField), containsString("VALIDATION_ERROR"))));
+    }
+
+    void registerValidationError(UserTo userTo, String errorField) throws Exception {
+        mockMvc.perform(post(REST_URL + "/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(userTo)))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(content().string(allOf(containsString(errorField), containsString("VALIDATION_ERROR"))));
     }
 }

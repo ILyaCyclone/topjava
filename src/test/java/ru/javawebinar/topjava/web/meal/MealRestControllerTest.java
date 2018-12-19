@@ -83,6 +83,24 @@ class MealRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    void testUpdateCaloriesValidationError() throws Exception {
+        updateValidationError(getUpdatedCaloriesValidationError());
+    }
+
+    @Test
+    void testUpdateDescriptionValidationError() throws Exception {
+        updateValidationError(getUpdatedDescriptionValidationError());
+    }
+
+    private void updateValidationError(Meal meal) throws Exception {
+        mockMvc.perform(put(REST_URL + MEAL1_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(getUpdatedDescriptionValidationError()))
+                .with(userHttpBasic(USER)))
+                .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
     void testCreate() throws Exception {
         Meal created = getCreated();
         ResultActions action = mockMvc.perform(post(REST_URL)
@@ -95,6 +113,24 @@ class MealRestControllerTest extends AbstractControllerTest {
 
         assertMatch(returned, created);
         assertMatch(service.getAll(ADMIN_ID), ADMIN_MEAL2, created, ADMIN_MEAL1);
+    }
+
+    @Test
+    void testCreateCaloriesValidationError() throws Exception {
+        createValidationError(getCreatedCaloriesValidationError());
+    }
+
+    @Test
+    void testCreateDescriptionValidationError() throws Exception {
+        createValidationError(getCreatedDescriptionValidationError());
+    }
+
+    private void createValidationError(Meal created) throws Exception {
+        ResultActions action = mockMvc.perform(post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(created))
+                .with(userHttpBasic(ADMIN)))
+                .andExpect(status().isUnprocessableEntity());
     }
 
     @Test

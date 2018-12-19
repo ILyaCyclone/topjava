@@ -1,16 +1,19 @@
 package ru.javawebinar.topjava.web.user;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.javawebinar.topjava.TestUtil;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
-import ru.javawebinar.topjava.web.json.JsonUtil;
 
 import java.util.Collections;
 
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.core.StringContains.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -89,7 +92,7 @@ class AdminRestControllerTest extends AbstractControllerTest {
         mockMvc.perform(put(REST_URL + USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(ADMIN))
-                .content(JsonUtil.writeValue(updated)))
+                .content(jsonWithPassword(updated, updated.getPassword())))
                 .andExpect(status().isNoContent());
 
         assertMatch(userService.get(USER_ID), updated);
@@ -109,6 +112,45 @@ class AdminRestControllerTest extends AbstractControllerTest {
 
         assertMatch(returned, expected);
         assertMatch(userService.getAll(), ADMIN, expected, USER);
+    }
+
+    @Test
+    void testCreatePasswordValidationError() throws Exception {
+        String invalidPassword = "1234";
+        User created = new User(null, "New", "new@gmail.com", invalidPassword, 2300, Role.ROLE_USER, Role.ROLE_ADMIN);
+        createValidationError(created, "password");
+    }
+
+    @Test
+    void testCreateNameValidationError() throws Exception {
+        String invalidName = "N";
+        User created = new User(null, invalidName, "new@gmail.com", "newPass", 2300, Role.ROLE_USER, Role.ROLE_ADMIN);
+        createValidationError(created, "name");
+    }
+
+    @Test
+    void testUpdateNameValidationError() throws Exception {
+        User updated = new User(USER);
+        updated.setName("o");
+        updateValidationError(updated, "name");
+    }
+
+    void createValidationError(User created, String errorField) throws Exception {
+        validationError(HttpMethod.POST, REST_URL, created, errorField);
+    }
+
+    void updateValidationError(User updated, String errorField) throws Exception {
+        validationError(HttpMethod.PUT, REST_URL + "/" + updated.getId(), updated, errorField);
+    }
+
+    void validationError(HttpMethod httpMethod, String url, User user, String errorField) throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.request(httpMethod, url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(ADMIN))
+                .content(jsonWithPassword(user, user.getPassword())))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(content().string(allOf(containsString(errorField), containsString("VALIDATION_ERROR"))));
+//                .andExpect(MockMvcResultMatchers.jsonPath("$.type").value("VALIDATION_ERROR"));
     }
 
     @Test
