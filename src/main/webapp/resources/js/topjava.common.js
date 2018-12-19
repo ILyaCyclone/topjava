@@ -95,11 +95,21 @@ function failNoty(jqXHR) {
     closeNoty();
     // https://stackoverflow.com/questions/48229776
     const errorInfo = JSON.parse(jqXHR.responseText);
+    const detailsInfo = prepareErrorDetails(errorInfo.details);
     failedNote = new Noty({
-        text: "<span class='fa fa-lg fa-exclamation-circle'></span> &nbsp;" + i18n["common.errorStatus"] + ": " + jqXHR.status + "<br>" + i18n["error." + errorInfo.type] + "<br>" + errorInfo.details.join("<br>"),
+        text: "<span class='fa fa-lg fa-exclamation-circle'></span> &nbsp;" + i18n["common.errorStatus"] + ": " + jqXHR.status + "<br>" + i18n["error." + errorInfo.type] + "<br>" + detailsInfo,
         type: "error",
         layout: "bottomRight"
     }).show();
+}
+
+function prepareErrorDetails(details) {
+    for (let i = 0; i < details.length; i++) {
+        if (details[i].includes("users_unique_email_idx")) {
+            details[i] = i18n["error.emailAlreadyExists"];
+        }
+    }
+    return details.join("<br>");
 }
 
 function renderEditBtn(data, type, row) {
