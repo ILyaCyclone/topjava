@@ -16,6 +16,7 @@ CREATE TABLE users
   calories_per_day INTEGER DEFAULT 2000    NOT NULL
 );
 CREATE UNIQUE INDEX users_unique_email_idx ON users (email);
+CREATE UNIQUE INDEX users_unique_name_idx ON users (name);
 
 CREATE TABLE user_roles
 (

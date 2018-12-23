@@ -11,10 +11,10 @@
         <label class="col-form-label"><spring:message code="${labelCode}"/></label>
         <c:choose>
             <c:when test="${inputType == 'password'}"><form:password path="${name}"
-                                                                     class="form-control is-invalid"/></c:when>
+                                                                     class="form-control"/></c:when>
             <c:when test="${inputType == 'number'}"><form:input path="${name}" type="number"
-                                                                class="form-control is-invalid"/></c:when>
-            <c:otherwise><form:input path="${name}" class="form-control is-invalid"/></c:otherwise>
+                                                                class="form-control"/></c:when>
+            <c:otherwise><form:input path="${name}" class="form-control"/></c:otherwise>
         </c:choose>
         <div class="invalid-feedback">${status.errorMessage}</div>
     </div>
